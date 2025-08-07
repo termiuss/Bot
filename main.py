@@ -43,9 +43,9 @@ console_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(
 logger.addHandler(console_handler)
 
 # Загрузка конфигурации из переменных окружения (Secrets)
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("8428265621:AAHAHChiibGDYqzJnnuG8WnueF8ohKR11L0")
 try:
-    ADMIN_IDS = [int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip()]
+    ADMIN_IDS = [int(x) for x in os.getenv("8157736162", "5042109970").split(",") if x.strip()]
 except ValueError:
     logger.error("Ошибка: ADMIN_IDS содержит нечисловые значения")
     raise ValueError("ADMIN_IDS содержит нечисловые значения")

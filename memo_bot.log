@@ -1,0 +1,120 @@
+2025-08-12 13:00:23,524 - __main__ - INFO - Попытка подключения к базе данных: database.db
+2025-08-12 13:00:23,542 - __main__ - INFO - База данных успешно инициализирована
+2025-08-12 13:00:23,543 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-08-12 13:00:23,544 - apscheduler.scheduler - INFO - Added job "check_pending_orders" to job store "default"
+2025-08-12 13:00:23,544 - apscheduler.scheduler - INFO - Scheduler started
+2025-08-12 13:00:23,544 - __main__ - INFO - Бот запущен
+2025-08-12 13:00:23,545 - aiogram.dispatcher - INFO - Start polling
+2025-08-12 13:00:23,892 - aiogram.dispatcher - INFO - Run polling for bot @ItMEMOshop_bot id=8428265621 - '𝗠𝗘𝗠𝗢 𝗕𝗢𝗧'
+2025-08-12 13:00:24,156 - aiogram.event - INFO - Update id=646401702 is not handled. Duration 79 ms by bot id=8428265621
+2025-08-12 13:00:24,160 - aiogram.event - INFO - Update id=646401721 is not handled. Duration 70 ms by bot id=8428265621
+2025-08-12 13:00:24,244 - __main__ - INFO - Добавлен пользователь 7824705137 (@etakamarqq)
+2025-08-12 13:00:24,479 - aiogram.event - INFO - Update id=646401719 is handled. Duration 391 ms by bot id=8428265621
+2025-08-12 13:00:24,485 - aiogram.event - INFO - Update id=646401712 is handled. Duration 399 ms by bot id=8428265621
+2025-08-12 13:00:24,532 - aiogram.event - INFO - Update id=646401705 is handled. Duration 453 ms by bot id=8428265621
+2025-08-12 13:00:24,556 - aiogram.event - INFO - Update id=646401718 is handled. Duration 468 ms by bot id=8428265621
+2025-08-12 13:00:24,565 - aiogram.event - INFO - Update id=646401722 is handled. Duration 476 ms by bot id=8428265621
+2025-08-12 13:00:24,598 - aiogram.event - INFO - Update id=646401711 is handled. Duration 513 ms by bot id=8428265621
+2025-08-12 13:00:24,623 - aiogram.event - INFO - Update id=646401707 is handled. Duration 539 ms by bot id=8428265621
+2025-08-12 13:00:24,645 - aiogram.event - INFO - Update id=646401706 is handled. Duration 564 ms by bot id=8428265621
+2025-08-12 13:00:24,674 - aiogram.event - INFO - Update id=646401720 is handled. Duration 585 ms by bot id=8428265621
+2025-08-12 13:00:24,675 - aiogram.event - INFO - Update id=646401716 is handled. Duration 588 ms by bot id=8428265621
+2025-08-12 13:00:24,695 - aiogram.event - INFO - Update id=646401704 is handled. Duration 617 ms by bot id=8428265621
+2025-08-12 13:00:24,699 - aiogram.event - INFO - Update id=646401717 is handled. Duration 612 ms by bot id=8428265621
+2025-08-12 13:00:24,725 - aiogram.event - INFO - Update id=646401710 is handled. Duration 640 ms by bot id=8428265621
+2025-08-12 13:00:24,754 - aiogram.event - INFO - Update id=646401715 is handled. Duration 667 ms by bot id=8428265621
+2025-08-12 13:00:24,786 - aiogram.event - INFO - Update id=646401703 is handled. Duration 709 ms by bot id=8428265621
+2025-08-12 13:00:24,810 - aiogram.event - INFO - Update id=646401713 is handled. Duration 724 ms by bot id=8428265621
+2025-08-12 13:00:24,837 - aiogram.event - INFO - Update id=646401709 is handled. Duration 752 ms by bot id=8428265621
+2025-08-12 13:00:24,863 - aiogram.event - INFO - Update id=646401714 is handled. Duration 777 ms by bot id=8428265621
+2025-08-12 13:00:24,889 - aiogram.event - INFO - Update id=646401708 is handled. Duration 805 ms by bot id=8428265621
+2025-08-12 13:00:35,395 - __main__ - ERROR - Ошибка преобразования ID в process_user_profit для 8157736162: invalid literal for int() with base 10: '🔙 Назад'
+Traceback (most recent call last):
+  File "/home/runner/workspace/main.py", line 2610, in process_user_profit
+    telegram_id = int(message.text.strip())
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '🔙 Назад'
+
+2025-08-12 13:00:35,525 - aiogram.event - INFO - Update id=646401723 is handled. Duration 137 ms by bot id=8428265621
+2025-08-12 13:00:38,383 - aiogram.event - INFO - Update id=646401724 is not handled. Duration 9 ms by bot id=8428265621
+2025-08-12 13:00:45,100 - aiogram.event - INFO - Update id=646401725 is handled. Duration 137 ms by bot id=8428265621
+2025-08-12 13:00:47,966 - __main__ - INFO - Пользователь 8157736162 принял условия
+2025-08-12 13:00:47,982 - __main__ - INFO - Лог действия: accept_rules, user_id: 8157736162, order_id: None, description: Пользователь принял условия
+2025-08-12 13:00:47,982 - aiogram.event - INFO - Update id=646401726 is handled. Duration 348 ms by bot id=8428265621
+2025-08-12 13:00:56,002 - aiogram.event - INFO - Update id=646401727 is handled. Duration 166 ms by bot id=8428265621
+2025-08-12 13:01:01,503 - aiogram.event - INFO - Update id=646401728 is handled. Duration 172 ms by bot id=8428265621
+2025-08-12 13:01:03,234 - aiogram.event - INFO - Update id=646401729 is handled. Duration 236 ms by bot id=8428265621
+2025-08-12 13:01:04,366 - aiogram.event - INFO - Update id=646401730 is handled. Duration 231 ms by bot id=8428265621
+2025-08-12 13:01:07,161 - aiogram.event - INFO - Update id=646401731 is handled. Duration 161 ms by bot id=8428265621
+2025-08-12 13:01:14,668 - __main__ - INFO - Пользователь 8157736162 (@ItMEMOO) запустил бота
+2025-08-12 13:01:14,669 - aiogram.event - INFO - Update id=646401732 is handled. Duration 142 ms by bot id=8428265621
+2025-08-12 13:01:19,290 - aiogram.event - INFO - Update id=646401733 is handled. Duration 215 ms by bot id=8428265621
+2025-08-12 13:01:19,788 - aiogram.event - INFO - Update id=646401734 is handled. Duration 142 ms by bot id=8428265621
+2025-08-12 13:01:21,327 - aiogram.event - INFO - Update id=646401735 is handled. Duration 142 ms by bot id=8428265621
+2025-08-12 13:01:21,506 - aiogram.event - INFO - Update id=646401736 is handled. Duration 137 ms by bot id=8428265621
+2025-08-12 13:01:23,262 - aiogram.event - INFO - Update id=646401737 is handled. Duration 171 ms by bot id=8428265621
+2025-08-12 13:01:24,984 - aiogram.event - INFO - Update id=646401738 is handled. Duration 141 ms by bot id=8428265621
+2025-08-12 13:01:31,124 - __main__ - INFO - Пользователь 8157736162 (@ItMEMOO) запустил бота
+2025-08-12 13:01:31,124 - aiogram.event - INFO - Update id=646401739 is handled. Duration 185 ms by bot id=8428265621
+2025-08-12 13:01:40,680 - aiogram.event - INFO - Update id=646401740 is handled. Duration 245 ms by bot id=8428265621
+2025-08-12 13:01:46,452 - aiogram.event - INFO - Update id=646401741 is handled. Duration 182 ms by bot id=8428265621
+2025-08-12 13:03:06,563 - __main__ - INFO - Добавлен пользователь 7721829168 (@Old_hass)
+2025-08-12 13:03:06,930 - aiogram.event - INFO - Update id=646401742 is handled. Duration 413 ms by bot id=8428265621
+2025-08-12 13:03:09,283 - __main__ - INFO - Пользователь 7721829168 принял условия
+2025-08-12 13:03:09,299 - __main__ - INFO - Лог действия: accept_rules, user_id: 7721829168, order_id: None, description: Пользователь принял условия
+2025-08-12 13:03:09,299 - aiogram.event - INFO - Update id=646401743 is handled. Duration 222 ms by bot id=8428265621
+2025-08-12 13:03:11,363 - aiogram.event - INFO - Update id=646401744 is handled. Duration 133 ms by bot id=8428265621
+2025-08-12 13:03:12,865 - aiogram.event - INFO - Update id=646401745 is handled. Duration 140 ms by bot id=8428265621
+2025-08-12 13:03:15,978 - aiogram.event - INFO - Update id=646401746 is handled. Duration 127 ms by bot id=8428265621
+2025-08-12 13:03:18,795 - aiogram.event - INFO - Update id=646401747 is handled. Duration 129 ms by bot id=8428265621
+2025-08-12 13:03:20,617 - aiogram.event - INFO - Update id=646401748 is handled. Duration 121 ms by bot id=8428265621
+2025-08-12 13:03:22,405 - aiogram.event - INFO - Update id=646401749 is handled. Duration 133 ms by bot id=8428265621
+2025-08-12 13:03:24,158 - aiogram.event - INFO - Update id=646401750 is handled. Duration 155 ms by bot id=8428265621
+2025-08-12 13:03:27,725 - __main__ - INFO - Лог действия: support_request, user_id: 7721829168, order_id: None, description: Запрос в поддержку: Хуй
+2025-08-12 13:03:27,725 - aiogram.event - INFO - Update id=646401751 is handled. Duration 585 ms by bot id=8428265621
+2025-08-12 13:03:39,242 - aiogram.event - INFO - Update id=646401752 is handled. Duration 149 ms by bot id=8428265621
+2025-08-12 13:04:04,301 - aiogram.event - INFO - Update id=646401753 is handled. Duration 425 ms by bot id=8428265621
+2025-08-12 13:04:07,074 - aiogram.event - INFO - Update id=646401754 is handled. Duration 217 ms by bot id=8428265621
+2025-08-12 13:04:12,580 - aiogram.event - INFO - Update id=646401755 is handled. Duration 142 ms by bot id=8428265621
+2025-08-12 13:04:14,917 - aiogram.event - INFO - Update id=646401756 is handled. Duration 165 ms by bot id=8428265621
+2025-08-12 13:04:16,433 - aiogram.event - INFO - Update id=646401757 is handled. Duration 243 ms by bot id=8428265621
+2025-08-12 13:05:57,514 - __main__ - INFO - Попытка подключения к базе данных: database.db
+2025-08-12 13:05:57,520 - __main__ - INFO - База данных успешно инициализирована
+2025-08-12 13:05:57,522 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-08-12 13:05:57,524 - apscheduler.scheduler - INFO - Added job "check_pending_orders" to job store "default"
+2025-08-12 13:05:57,524 - apscheduler.scheduler - INFO - Scheduler started
+2025-08-12 13:05:57,524 - __main__ - INFO - Бот запущен
+2025-08-12 13:05:57,525 - aiogram.dispatcher - INFO - Start polling
+2025-08-12 13:05:57,847 - aiogram.dispatcher - INFO - Run polling for bot @ItMEMOshop_bot id=8428265621 - '𝗠𝗘𝗠𝗢 𝗕𝗢𝗧'
+2025-08-12 13:05:58,498 - aiogram.event - INFO - Update id=646401758 is handled. Duration 461 ms by bot id=8428265621
+2025-08-12 13:05:58,517 - aiogram.event - INFO - Update id=646401759 is handled. Duration 480 ms by bot id=8428265621
+2025-08-12 13:06:04,200 - aiogram.event - INFO - Update id=646401760 is handled. Duration 158 ms by bot id=8428265621
+2025-08-12 13:06:06,253 - aiogram.event - INFO - Update id=646401761 is handled. Duration 171 ms by bot id=8428265621
+2025-08-12 13:06:14,266 - aiogram.event - INFO - Update id=646401762 is handled. Duration 197 ms by bot id=8428265621
+2025-08-12 13:06:15,950 - aiogram.event - INFO - Update id=646401763 is handled. Duration 202 ms by bot id=8428265621
+2025-08-12 13:06:20,025 - aiogram.event - INFO - Update id=646401764 is handled. Duration 187 ms by bot id=8428265621
+2025-08-12 13:07:38,954 - __main__ - INFO - Попытка подключения к базе данных: database.db
+2025-08-12 13:07:38,957 - __main__ - INFO - База данных успешно инициализирована
+2025-08-12 13:07:38,958 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-08-12 13:07:38,959 - apscheduler.scheduler - INFO - Added job "check_pending_orders" to job store "default"
+2025-08-12 13:07:38,959 - apscheduler.scheduler - INFO - Scheduler started
+2025-08-12 13:07:38,959 - __main__ - INFO - Бот запущен
+2025-08-12 13:07:38,959 - aiogram.dispatcher - INFO - Start polling
+2025-08-12 13:07:39,285 - aiogram.dispatcher - INFO - Run polling for bot @ItMEMOshop_bot id=8428265621 - '𝗠𝗘𝗠𝗢 𝗕𝗢𝗧'
+2025-08-12 13:07:46,847 - aiogram.event - INFO - Update id=646401765 is handled. Duration 367 ms by bot id=8428265621
+2025-08-12 13:07:48,218 - aiogram.event - INFO - Update id=646401766 is handled. Duration 146 ms by bot id=8428265621
+2025-08-12 13:07:50,740 - aiogram.event - INFO - Update id=646401767 is handled. Duration 155 ms by bot id=8428265621
+2025-08-12 13:07:54,406 - aiogram.event - INFO - Update id=646401768 is handled. Duration 144 ms by bot id=8428265621
+2025-08-12 13:07:55,929 - aiogram.event - INFO - Update id=646401769 is handled. Duration 135 ms by bot id=8428265621
+2025-08-12 13:07:58,040 - aiogram.event - INFO - Update id=646401770 is handled. Duration 454 ms by bot id=8428265621
+2025-08-12 13:08:00,018 - aiogram.event - INFO - Update id=646401771 is handled. Duration 235 ms by bot id=8428265621
+2025-08-12 13:08:03,926 - aiogram.event - INFO - Update id=646401772 is handled. Duration 146 ms by bot id=8428265621
+2025-08-12 13:08:09,601 - __main__ - INFO - Пользователь 7721829168 обновил PUBG ID: 11111111
+2025-08-12 13:08:09,615 - __main__ - INFO - Лог действия: update_pubg_id, user_id: 7721829168, order_id: None, description: Обновлен PUBG ID: 11111111
+2025-08-12 13:08:09,615 - aiogram.event - INFO - Update id=646401773 is handled. Duration 184 ms by bot id=8428265621
+2025-08-12 13:08:12,646 - aiogram.event - INFO - Update id=646401774 is handled. Duration 161 ms by bot id=8428265621
+2025-08-12 13:08:14,233 - aiogram.event - INFO - Update id=646401775 is handled. Duration 273 ms by bot id=8428265621
+2025-08-12 13:08:16,167 - aiogram.event - INFO - Update id=646401776 is handled. Duration 234 ms by bot id=8428265621
+2025-08-12 13:08:17,836 - aiogram.event - INFO - Update id=646401777 is handled. Duration 289 ms by bot id=8428265621
+2025-08-12 13:08:21,312 - aiogram.event - INFO - Update id=646401778 is handled. Duration 146 ms by bot id=8428265621
+2025-08-12 13:08:25,096 - aiogram.event - INFO - Update id=646401779 is handled. Duration 148 ms by bot id=8428265621

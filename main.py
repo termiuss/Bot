@@ -672,10 +672,6 @@ async def get_menu_keyboard(user_id: int):
     if await is_leader(user_id):
         base_keyboard.append([KeyboardButton(text="👥 Управление участниками"), KeyboardButton(text="🏠 Управление сквадом")])
 
-    # Добавляем кнопки лидера если пользователь является лидером
-    if await is_leader(user_id):
-        base_keyboard.append([KeyboardButton(text="👥 Управление участниками"), KeyboardButton(text="🏠 Управление сквадом")])
-
     # Добавляем админ-панель для админов
     if is_admin(user_id):
         base_keyboard.append([KeyboardButton(text="🚪 Админ-панель")])
@@ -3005,6 +3001,375 @@ async def admin_contact_leader(message: types.Message, state: FSMContext):
     except TelegramAPIError as e:
         logger.error(f"Ошибка Telegram API в admin_contact_leader для {user_id}: {e}")
         await message.answer(MESSAGES["error"], reply_markup=get_leaders_submenu_keyboard())
+
+@dp.message(F.text == "👥 Управление участниками")
+async def members_management_menu(message: types.Message):
+    if not await check_access(message):
+        return
+    user_id = message.from_user.id
+    if not await is_leader(user_id):
+        await message.answer("❌ У вас нет доступа к этой функции.", reply_markup=await get_menu_keyboard(user_id))
+        return
+    try:
+        user_context[user_id] = 'members_management'
+        await message.answer("👥 Управление участниками сквада:", reply_markup=get_members_management_keyboard())
+    except TelegramAPIError as e:
+        logger.error(f"Ошибка в members_management_menu для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=await get_menu_keyboard(user_id))
+
+@dp.message(F.text == "🏠 Управление сквадом")
+async def squad_management_menu(message: types.Message):
+    if not await check_access(message):
+        return
+    user_id = message.from_user.id
+    if not await is_leader(user_id):
+        await message.answer("❌ У вас нет доступа к этой функции.", reply_markup=await get_menu_keyboard(user_id))
+        return
+    try:
+        user_context[user_id] = 'squad_management'
+        await message.answer("🏠 Управление сквадом:", reply_markup=get_squad_management_keyboard())
+    except TelegramAPIError as e:
+        logger.error(f"Ошибка в squad_management_menu для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=await get_menu_keyboard(user_id))
+
+@dp.message(F.text == "➕ Добавить участника")
+async def add_member_handler(message: types.Message, state: FSMContext):
+    if not await check_access(message):
+        return
+    user_id = message.from_user.id
+    if not await is_leader(user_id):
+        await message.answer("❌ У вас нет доступа к этой функции.", reply_markup=await get_menu_keyboard(user_id))
+        return
+    try:
+        await message.answer("👤 Введите Telegram ID пользователя для добавления в сквад:", reply_markup=get_cancel_keyboard())
+        await state.set_state(Form.add_member)
+    except TelegramAPIError as e:
+        logger.error(f"Ошибка в add_member_handler для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_members_management_keyboard())
+
+@dp.message(Form.add_member)
+async def process_add_member(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    if message.text == "🚫 Отмена":
+        await message.answer(MESSAGES["cancel_action"], reply_markup=get_members_management_keyboard())
+        await state.clear()
+        return
+    
+    try:
+        target_user_id = int(message.text.strip())
+        
+        # Получаем информацию о лидере и его сквад
+        async with aiosqlite.connect(DB_PATH) as conn:
+            cursor = await conn.execute(
+                '''
+                SELECT sl.squad_id, s.name
+                FROM squad_leaders sl
+                JOIN squads s ON sl.squad_id = s.id
+                JOIN escorts e ON sl.leader_id = e.id
+                WHERE e.telegram_id = ?
+                ''', (user_id,)
+            )
+            leader_squad = await cursor.fetchone()
+            if not leader_squad:
+                await message.answer("❌ Вы не являетесь лидером сквада.", reply_markup=get_members_management_keyboard())
+                await state.clear()
+                return
+            
+            squad_id, squad_name = leader_squad
+            
+            # Проверяем, существует ли пользователь
+            cursor = await conn.execute("SELECT id, squad_id, username FROM escorts WHERE telegram_id = ?", (target_user_id,))
+            user_data = await cursor.fetchone()
+            if not user_data:
+                await message.answer("❌ Пользователь не найден в системе.", reply_markup=get_cancel_keyboard())
+                return
+            
+            escort_id, current_squad_id, username = user_data
+            
+            if current_squad_id == squad_id:
+                await message.answer("❌ Пользователь уже состоит в вашем скваде.", reply_markup=get_cancel_keyboard())
+                return
+            
+            if current_squad_id:
+                await message.answer("❌ Пользователь уже состоит в другом скваде.", reply_markup=get_cancel_keyboard())
+                return
+            
+            # Добавляем пользователя в сквад
+            await conn.execute("UPDATE escorts SET squad_id = ? WHERE id = ?", (squad_id, escort_id))
+            await conn.commit()
+        
+        await message.answer(f"✅ Пользователь @{username or 'Unknown'} добавлен в сквад '{squad_name}'!", reply_markup=get_members_management_keyboard())
+        await log_action("add_member", user_id, None, f"Добавлен участник {target_user_id} в сквад {squad_name}")
+        await state.clear()
+        
+        # Уведомляем добавленного пользователя
+        try:
+            await bot.send_message(target_user_id, f"🎉 Вы добавлены в сквад '{squad_name}'!")
+        except TelegramAPIError:
+            pass
+            
+    except ValueError:
+        await message.answer("❌ Неверный формат Telegram ID.", reply_markup=get_cancel_keyboard())
+    except aiosqlite.Error as e:
+        logger.error(f"Ошибка в process_add_member для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_members_management_keyboard())
+        await state.clear()
+
+@dp.message(F.text == "➖ Удалить участника")
+async def remove_member_handler(message: types.Message, state: FSMContext):
+    if not await check_access(message):
+        return
+    user_id = message.from_user.id
+    if not await is_leader(user_id):
+        await message.answer("❌ У вас нет доступа к этой функции.", reply_markup=await get_menu_keyboard(user_id))
+        return
+    try:
+        await message.answer("👤 Введите Telegram ID участника для удаления из сквада:", reply_markup=get_cancel_keyboard())
+        await state.set_state(Form.remove_member)
+    except TelegramAPIError as e:
+        logger.error(f"Ошибка в remove_member_handler для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_members_management_keyboard())
+
+@dp.message(Form.remove_member)
+async def process_remove_member(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    if message.text == "🚫 Отмена":
+        await message.answer(MESSAGES["cancel_action"], reply_markup=get_members_management_keyboard())
+        await state.clear()
+        return
+    
+    try:
+        target_user_id = int(message.text.strip())
+        
+        # Получаем информацию о лидере и его сквад
+        async with aiosqlite.connect(DB_PATH) as conn:
+            cursor = await conn.execute(
+                '''
+                SELECT sl.squad_id, s.name
+                FROM squad_leaders sl
+                JOIN squads s ON sl.squad_id = s.id
+                JOIN escorts e ON sl.leader_id = e.id
+                WHERE e.telegram_id = ?
+                ''', (user_id,)
+            )
+            leader_squad = await cursor.fetchone()
+            if not leader_squad:
+                await message.answer("❌ Вы не являетесь лидером сквада.", reply_markup=get_members_management_keyboard())
+                await state.clear()
+                return
+            
+            squad_id, squad_name = leader_squad
+            
+            # Проверяем, является ли пользователь участником сквада
+            cursor = await conn.execute("SELECT id, username FROM escorts WHERE telegram_id = ? AND squad_id = ?", (target_user_id, squad_id))
+            user_data = await cursor.fetchone()
+            if not user_data:
+                await message.answer("❌ Пользователь не состоит в вашем скваде.", reply_markup=get_cancel_keyboard())
+                return
+            
+            escort_id, username = user_data
+            
+            # Нельзя удалить самого себя
+            if target_user_id == user_id:
+                await message.answer("❌ Вы не можете удалить себя из сквада.", reply_markup=get_cancel_keyboard())
+                return
+            
+            # Удаляем пользователя из сквада
+            await conn.execute("UPDATE escorts SET squad_id = NULL WHERE id = ?", (escort_id,))
+            await conn.commit()
+        
+        await message.answer(f"✅ Пользователь @{username or 'Unknown'} удален из сквада '{squad_name}'!", reply_markup=get_members_management_keyboard())
+        await log_action("remove_member", user_id, None, f"Удален участник {target_user_id} из сквада {squad_name}")
+        await state.clear()
+        
+        # Уведомляем удаленного пользователя
+        try:
+            await bot.send_message(target_user_id, f"❌ Вы исключены из сквада '{squad_name}'.")
+        except TelegramAPIError:
+            pass
+            
+    except ValueError:
+        await message.answer("❌ Неверный формат Telegram ID.", reply_markup=get_cancel_keyboard())
+    except aiosqlite.Error as e:
+        logger.error(f"Ошибка в process_remove_member для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_members_management_keyboard())
+        await state.clear()
+
+@dp.message(F.text == "📋 Список участников")
+async def list_members(message: types.Message):
+    if not await check_access(message):
+        return
+    user_id = message.from_user.id
+    if not await is_leader(user_id):
+        await message.answer("❌ У вас нет доступа к этой функции.", reply_markup=await get_menu_keyboard(user_id))
+        return
+    try:
+        async with aiosqlite.connect(DB_PATH) as conn:
+            cursor = await conn.execute(
+                '''
+                SELECT e.telegram_id, e.username, e.pubg_id, e.completed_orders, e.balance, s.name
+                FROM squad_leaders sl
+                JOIN squads s ON sl.squad_id = s.id
+                JOIN escorts e ON sl.leader_id = e.id
+                WHERE e.telegram_id = ?
+                ''', (user_id,)
+            )
+            leader_info = await cursor.fetchone()
+            if not leader_info:
+                await message.answer("❌ Вы не являетесь лидером сквада.", reply_markup=get_members_management_keyboard())
+                return
+            
+            squad_name = leader_info[5]
+            
+            cursor = await conn.execute(
+                '''
+                SELECT e.telegram_id, e.username, e.pubg_id, e.completed_orders, e.balance
+                FROM squad_leaders sl
+                JOIN escorts e2 ON sl.leader_id = e2.id
+                JOIN escorts e ON e.squad_id = sl.squad_id
+                WHERE e2.telegram_id = ?
+                ORDER BY e.username
+                ''', (user_id,)
+            )
+            members = await cursor.fetchall()
+        
+        if not members:
+            await message.answer(f"👥 В скваде '{squad_name}' пока нет участников.", reply_markup=get_members_management_keyboard())
+            return
+        
+        response = f"👥 Участники сквада '{squad_name}':\n\n"
+        for telegram_id, username, pubg_id, completed_orders, balance in members:
+            role = " (Лидер)" if telegram_id == user_id else ""
+            response += f"👤 @{username or 'Unknown'} (ID: {telegram_id}){role}\n"
+            response += f"🎮 PUBG ID: {pubg_id or 'не указан'}\n"
+            response += f"📋 Заказов: {completed_orders}\n"
+            response += f"💰 Баланс: {balance:.2f} руб.\n\n"
+        
+        await message.answer(response, reply_markup=get_members_management_keyboard())
+    except aiosqlite.Error as e:
+        logger.error(f"Ошибка в list_members для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_members_management_keyboard())
+
+@dp.message(F.text == "📝 Переименовать сквад")
+async def rename_squad_handler(message: types.Message, state: FSMContext):
+    if not await check_access(message):
+        return
+    user_id = message.from_user.id
+    if not await is_leader(user_id):
+        await message.answer("❌ У вас нет доступа к этой функции.", reply_markup=await get_menu_keyboard(user_id))
+        return
+    try:
+        await message.answer("📝 Введите новое название сквада:", reply_markup=get_cancel_keyboard())
+        await state.set_state(Form.rename_squad)
+    except TelegramAPIError as e:
+        logger.error(f"Ошибка в rename_squad_handler для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_squad_management_keyboard())
+
+@dp.message(Form.rename_squad)
+async def process_rename_squad(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    if message.text == "🚫 Отмена":
+        await message.answer(MESSAGES["cancel_action"], reply_markup=get_squad_management_keyboard())
+        await state.clear()
+        return
+    
+    new_name = message.text.strip()
+    if not new_name:
+        await message.answer("❌ Название сквада не может быть пустым.", reply_markup=get_cancel_keyboard())
+        return
+    
+    try:
+        async with aiosqlite.connect(DB_PATH) as conn:
+            cursor = await conn.execute(
+                '''
+                SELECT sl.squad_id, s.name
+                FROM squad_leaders sl
+                JOIN squads s ON sl.squad_id = s.id
+                JOIN escorts e ON sl.leader_id = e.id
+                WHERE e.telegram_id = ?
+                ''', (user_id,)
+            )
+            leader_squad = await cursor.fetchone()
+            if not leader_squad:
+                await message.answer("❌ Вы не являетесь лидером сквада.", reply_markup=get_squad_management_keyboard())
+                await state.clear()
+                return
+            
+            squad_id, old_name = leader_squad
+            
+            await conn.execute("UPDATE squads SET name = ? WHERE id = ?", (new_name, squad_id))
+            await conn.commit()
+        
+        await message.answer(f"✅ Сквад '{old_name}' переименован в '{new_name}'!", reply_markup=get_squad_management_keyboard())
+        await log_action("rename_squad", user_id, None, f"Переименован сквад '{old_name}' в '{new_name}'")
+        await state.clear()
+        
+    except aiosqlite.IntegrityError:
+        await message.answer("❌ Сквад с таким названием уже существует.", reply_markup=get_cancel_keyboard())
+    except aiosqlite.Error as e:
+        logger.error(f"Ошибка в process_rename_squad для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_squad_management_keyboard())
+        await state.clear()
+
+@dp.message(F.text == "📋 Список заказов")
+async def squad_orders_list(message: types.Message):
+    if not await check_access(message):
+        return
+    user_id = message.from_user.id
+    if not await is_leader(user_id):
+        await message.answer("❌ У вас нет доступа к этой функции.", reply_markup=await get_menu_keyboard(user_id))
+        return
+    try:
+        async with aiosqlite.connect(DB_PATH) as conn:
+            cursor = await conn.execute(
+                '''
+                SELECT sl.squad_id, s.name
+                FROM squad_leaders sl
+                JOIN squads s ON sl.squad_id = s.id
+                JOIN escorts e ON sl.leader_id = e.id
+                WHERE e.telegram_id = ?
+                ''', (user_id,)
+            )
+            leader_squad = await cursor.fetchone()
+            if not leader_squad:
+                await message.answer("❌ Вы не являетесь лидером сквада.", reply_markup=get_squad_management_keyboard())
+                return
+            
+            squad_id, squad_name = leader_squad
+            
+            cursor = await conn.execute(
+                '''
+                SELECT o.memo_order_id, o.customer_info, o.amount, o.status, o.created_at, o.completed_at
+                FROM orders o
+                WHERE o.squad_id = ?
+                ORDER BY o.created_at DESC
+                LIMIT 10
+                ''', (squad_id,)
+            )
+            orders = await cursor.fetchall()
+        
+        if not orders:
+            await message.answer(f"📋 У сквада '{squad_name}' пока нет заказов.", reply_markup=get_squad_management_keyboard())
+            return
+        
+        response = f"📋 Последние заказы сквада '{squad_name}':\n\n"
+        for memo_order_id, customer_info, amount, status, created_at, completed_at in orders:
+            status_text = {
+                'pending': '⏳ Ожидает',
+                'in_progress': '🔄 В процессе', 
+                'completed': '✅ Завершен'
+            }.get(status, status)
+            
+            response += f"#{memo_order_id} - {customer_info}\n"
+            response += f"💰 {amount:.2f} руб. | {status_text}\n"
+            if completed_at:
+                response += f"✅ Завершен: {datetime.fromisoformat(completed_at).strftime('%d.%m %H:%M')}\n"
+            response += "\n"
+        
+        await message.answer(response, reply_markup=get_squad_management_keyboard())
+    except aiosqlite.Error as e:
+        logger.error(f"Ошибка в squad_orders_list для {user_id}: {e}")
+        await message.answer(MESSAGES["error"], reply_markup=get_squad_management_keyboard())
 
 @dp.message(F.text == "👨‍💼 Связаться с лидером")
 async def user_contact_leader(message: types.Message):
